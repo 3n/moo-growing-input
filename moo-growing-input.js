@@ -53,9 +53,9 @@ var GrowingInput = new Class({
 			'left': 					'-100000px',
 			'top': 						'-100000px'
 		}).copyStyles(this.element, [
-			'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'min-height',
+			'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
 			'width', 'font-size', 'font-weight', 'font-family', 'border-width', 'line-height', 'border-style' 
-		])                  
+		]).setStyle('min-height', this.element.getStyle('height'))
 		
 		this.element.addEvent('keyup', this.textarea_keyup.bind(this))
 	},
