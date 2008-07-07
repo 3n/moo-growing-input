@@ -17,7 +17,7 @@ var GrowingInput = new Class({
 		else if (this.element.get('tag').toLowerCase() == "textarea") this.setup_textarea()
 	},
 	setup_input: function(){
-		if (this.element.get('type') != 'text') {return null;}
+		if (this.element.get('type') && this.element.get('type') != 'text') {return null;}
 		
 		this.refresh()
 
@@ -41,7 +41,7 @@ var GrowingInput = new Class({
 	input_keyup: function(){
 		this.fake_div.set( 'html', this.htmlspecialchars(this.element.get('value')) )
 		this.element.setStyles({
-			'width': Math.min( this.options.max_width, Math.max(this.fake_div.getStyle('width').parse_int()+10, this.min_width)),
+			'width': Math.min( this.options.max_width, Math.max(this.fake_div.getStyle('width').toInt()+10, this.min_width)),
 			'overflow':'hidden'
 		})
 	},
