@@ -1,0 +1,13 @@
+GrowingInput class for MooTools 1.2
+Version 0.1
+Author: Ian Collins (3n)
+
+
+GrowingInput is a class for MooTools that will add auto-expanding to any input
+or textarea element (as the user types the input grows to accommodate it).
+
+
+///////////////////////////////////////////////////////////////////////////////
+// EXAMPLES
+
+  new GrowingInput($('id-of-input-or-textarea-element'))
