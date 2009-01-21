@@ -1,9 +1,18 @@
+/*
+Script: GrowingInput.js
+	GrowingInput is a class for MooTools that will add auto-expanding to any input
+	or textarea element (as the user types the input grows to accommodate it).
+	Options:
+		keep_min_width: (bool) makes sure INPUT doesn't shrink in width beyond where it started
+		max_width: 			(string) makes sure INPUT doesn't grow in width beyond this px value
+*/
+
 var GrowingInput = new Class({
 	
-	Implements: Options,
+	Implements: [Options, Events],
 	
 	options: {
-		max_width: 600
+		keep_min_width : true
 	},
 	
 	initialize: function(elem, options){
@@ -17,9 +26,9 @@ var GrowingInput = new Class({
 		else if (this.element.get('tag').toLowerCase() == "textarea") this.setup_textarea()
 	},
 	setup_input: function(){
-		if (this.element.get('type') && this.element.get('type') != 'text') {return null;}
-		
-		this.refresh()
+		if (this.element.get('type') && this.element.get('type') != 'text') return
+				
+		this.min_width = this.element.getWidth();
 
 		this.fake_div = new Element('div', {
 			"id" : "fake_" + this.element.get('id')
@@ -39,11 +48,18 @@ var GrowingInput = new Class({
 		this.element.addEvent('keyup', this.input_keyup.bind(this))
 	},
 	input_keyup: function(){
-		this.fake_div.set( 'html', this.htmlspecialchars(this.element.get('value')) )
+		this.fake_div.set('html', this.element.get('value').replace_html_chars())
+		var width = this.fake_div.getStyle('width').toInt() + 20
+		
+		if (this.options.max_width) 			width = Math.min(this.options.max_width, width)
+		if (this.options.keep_min_width)	width = Math.max(this.min_width, width)
+		
 		this.element.setStyles({
-			'width': Math.min( this.options.max_width, Math.max(this.fake_div.getStyle('width').toInt()+10, this.min_width)),
-			'overflow':'hidden'
+			'width'		 : width,
+			'overflow' : 'hidden'
 		})
+		
+		this.fireEvent('onSized')
 	},
 	setup_textarea: function(){
 		this.fake_div = new Element('div', {
@@ -60,33 +76,16 @@ var GrowingInput = new Class({
 		this.element.addEvent('keyup', this.textarea_keyup.bind(this))
 	},
 	textarea_keyup: function(){
-		this.fake_div.set( 'html', this.htmlspecialchars(this.element.get('value')).replace(/[\n]/g, '<br />&nbsp;') )
+		this.fake_div.set( 'html', this.element.get('value').replace_html_chars().replace(/[\n]/g, '<br />&nbsp;'))
+
 		this.element.setStyles({
-			'height': this.fake_div.getStyle('height'),
+			'height': this.fake_div.getStyle('height').toInt(),
 			'overflow':'hidden'
 		})
-	},
-	htmlspecialchars: function(text) {
-	  if (typeof(text) == 'undefined' || !text.toString) { return ''; }
-	  if(text === false) {
-	      return '0';
-	  } else if (text === true) {
-	      return '1';
-	  }
-	  return text.toString().replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+		
+		this.fireEvent('onSized')
 	},
 	refresh: function(){
 		this.min_width = this.element.getWidth();
-	}
-});
-
-Element.implement({
-	copyStyles: function(elem, styles){
-		styles.each(function(s){
-			try {
-				this.setStyle(s,elem.getStyle(s))
-			}catch(e){}
-		},this)
-		return this
 	}
 });

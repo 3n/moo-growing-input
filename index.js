@@ -1,4 +1,3 @@
 window.addEvent('domready', function(){
-	new GrowingInput($('input-test'))
-	new GrowingInput($('textarea-test'))	
+	$$('input','textarea').each(function(i){ i.set('value','test'); new GrowingInput(i); })
 });
